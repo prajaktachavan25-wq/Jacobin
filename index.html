@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jacobian Tutor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.all.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; width: 100%; }
+        h1 { color: #1a73e8; text-align: center; }
+        .problem-area { background: #e8f0fe; padding: 20px; border-radius: 8px; margin: 20px 0; font-size: 1.2rem; border-left: 5px solid #1a73e8; }
+        .step { margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background: #1a73e8; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        .feedback { margin-top: 10px; font-weight: bold; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Jacobian Tutor</h1>
+    <div class="problem-area" id="problem-text">Loading problem...</div>
+    <div id="quiz">
+        <div class="step">
+            <strong>Step 1: Find ∂f/∂x</strong>
+            <input type="text" id="input0" placeholder="Example: 2*x">
+            <button onclick="check(0)">Check Step 1</button>
+            <div id="fb0" class="feedback"></div>
+        </div>
+        <div class="step">
+            <strong>Step 2: Find ∂f/∂y</strong>
+            <input type="text" id="input1" placeholder="Example: 3*y">
+            <button onclick="check(1)">Check Step 2</button>
+            <div id="fb1" class="feedback"></div>
+        </div>
+    </div>
+    <button style="background:#6c757d" onclick="setupProblem()">New Problem</button>
+</div>
+<script>
+    let solutions = [];
+    function setupProblem() {
+        const ops = ["x^2", "y^2", "3*x", "5*y", "x*y"];
+        const f = ops[Math.floor(Math.random()*ops.length)] + " + " + ops[Math.floor(Math.random()*ops.length)];
+        document.getElementById('problem-text').innerHTML = `Function: f(x, y) = ${f}`;
+        solutions = [math.derivative(f, 'x').toString(), math.derivative(f, 'y').toString()];
+        document.querySelectorAll('input').forEach(i => i.value = "");
+        document.querySelectorAll('.feedback').forEach(f => f.innerHTML = "");
+    }
+    function check(index) {
+        const userVal = document.getElementById('input' + index).value;
+        const fb = document.getElementById('fb' + index);
+        try {
+            const isCorrect = math.simplify(userVal).equals(math.simplify(solutions[index]));
+            fb.innerHTML = isCorrect ? "✓ Correct!" : "✗ Try again";
+            fb.className = "feedback " + (isCorrect ? "success" : "error");
+        } catch(e) { fb.innerHTML = "Use math notation like 2*x"; }
+    }
+    setupProblem();
+</script>
+</body>
+</html>
